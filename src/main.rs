@@ -1,7 +1,7 @@
 use anyhow::Result;
-use tcp_udp_stream_provider::TcpUdpStreamProvider;
 use tracing::info;
 use wasmcloud_provider_sdk::{load_host_data, run_provider};
+use wasmcloud_provider_tcp_udp_stream::TcpUdpStreamProvider;
 
 #[tokio::main]
 async fn main() -> Result<()> {

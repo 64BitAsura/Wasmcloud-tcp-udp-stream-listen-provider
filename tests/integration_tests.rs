@@ -66,7 +66,7 @@ async fn test_udp_server_connection() {
 /// Test configuration parsing
 #[test]
 fn test_provider_configuration() {
-    use tcp_udp_stream_provider::ProviderConfig;
+    use wasmcloud_provider_tcp_udp_stream::ProviderConfig;
 
     let json = r#"{
         "tcp": [

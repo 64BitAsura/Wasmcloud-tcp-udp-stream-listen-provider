@@ -2321,23 +2321,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tcp-udp-stream-provider"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-nats 0.38.0",
- "chrono",
- "futures",
- "serde",
- "serde_json",
- "tokio",
- "tokio-test",
- "tracing",
- "tracing-subscriber",
- "wasmcloud-provider-sdk",
-]
-
-[[package]]
 name = "thiserror"
 version = "1.0.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3045,6 +3028,24 @@ dependencies = [
  "wrpc-interface-http",
  "wrpc-transport",
  "wrpc-transport-nats",
+]
+
+[[package]]
+name = "wasmcloud-provider-tcp-udp-stream"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-nats 0.38.0",
+ "bytes",
+ "chrono",
+ "futures",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tokio-test",
+ "tracing",
+ "tracing-subscriber",
+ "wasmcloud-provider-sdk",
 ]
 
 [[package]]

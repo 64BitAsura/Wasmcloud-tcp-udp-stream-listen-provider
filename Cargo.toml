@@ -1,22 +1,40 @@
-[workspace]
-members = ["provider"]
-resolver = "2"
-
-[workspace.package]
+[package]
+name = "wasmcloud-provider-tcp-udp-stream"
 version = "0.1.0"
 edition = "2021"
+description = """
+A capability provider for unidirectional TCP/UDP stream listening that forwards messages to WasmCloud components via NATS.
+"""
 authors = ["64BitAsura"]
 license = "Apache-2.0"
 repository = "https://github.com/64BitAsura/Wasmcloud-tcp-udp-stream-listen-provider"
 
-[workspace.dependencies]
-wasmcloud-provider-sdk = "0.10"
-tokio = { version = "1.43", features = ["full"] }
+[workspace]
+
+[badges.maintenance]
+status = "actively-developed"
+
+[dependencies]
+anyhow = "1.0"
 async-nats = "0.38"
+bytes = "1.5"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+futures = "0.3"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+tokio = { version = "1.43", features = ["full"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-anyhow = "1.0"
-futures = "0.3"
-chrono = "0.4"
+wasmcloud-provider-sdk = "0.10"
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[profile.release]
+opt-level = "z"
+lto = true
+strip = true
+
+[[bin]]
+name = "tcp-udp-stream-provider"
+path = "src/main.rs"

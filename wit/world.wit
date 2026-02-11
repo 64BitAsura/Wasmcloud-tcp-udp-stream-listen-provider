@@ -1,0 +1,21 @@
+package wasmcloud:tcpudp@0.1.0;
+
+/// TCP/UDP Stream Messages interface
+interface stream-messages {
+    /// A message received from a TCP/UDP stream
+    record stream-message {
+        /// Source address (e.g., "tcp://host:port" or "udp://host:port")
+        source: string,
+        /// Message content (ASCII)
+        content: string,
+        /// Unix timestamp when received
+        timestamp: s64,
+    }
+
+    /// Handle incoming stream messages
+    handle-message: func(msg: stream-message) -> result<_, string>;
+}
+
+world tcp-udp-stream-world {
+    export stream-messages;
+}

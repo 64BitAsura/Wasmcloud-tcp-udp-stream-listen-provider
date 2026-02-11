@@ -1,0 +1,47 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: tcp-udp-stream-example
+  annotations:
+    version: v0.1.0
+    description: 'Example application using TCP/UDP Stream Provider'
+spec:
+  components:
+    - name: consumer-component
+      type: component
+      properties:
+        image: file://./wasmcloud-example/consumer-component/build/consumer_component_s.wasm
+      traits:
+        - type: spreadscaler
+          properties:
+            instances: 1
+        - type: link
+          properties:
+            target: tcp-udp-provider
+            namespace: wasmcloud
+            package: tcpudp
+            interfaces: [stream-messages]
+            source_config:
+              - name: stream-config
+
+    - name: tcp-udp-provider
+      type: capability
+      properties:
+        image: file://./build/tcp-udp-stream-provider.par.gz
+      traits:
+        - type: spreadscaler
+          properties:
+            instances: 1
+        - type: link
+          properties:
+            target: consumer-component
+            namespace: wasmcloud
+            package: tcpudp
+            interfaces: [stream-messages]
+            target_config:
+              - name: stream-config
+                properties:
+                  tcp:
+                    - host: localhost
+                      port: 8080
+                      reconnect_delay_ms: 5000
