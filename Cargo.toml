@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "provider",
+    "component",
+    "test-server",
+]
+resolver = "2"

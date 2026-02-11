@@ -1,0 +1,18 @@
+[package]
+name = "tcp-udp-stream-provider"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1"
+tokio = { version = "1", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[[bin]]
+name = "tcp-udp-provider"
+path = "src/main.rs"
+
+[lib]
+name = "tcp_udp_stream_provider"
+crate-type = ["cdylib", "rlib"]
