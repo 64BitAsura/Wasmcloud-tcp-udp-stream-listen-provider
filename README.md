@@ -2,6 +2,13 @@
 
 A wasmCloud capability provider that listens for TCP and UDP ASCII message streams and forwards them to components via the `wasmcloud:messaging` interface.
 
+## 📚 Documentation
+
+- **[Quick Start Guide](QUICKSTART.md)** - Get up and running in 5 minutes
+- **[Testing Guide](TESTING.md)** - Comprehensive testing documentation
+- **[Architecture](ARCHITECTURE.md)** - System design and technical details
+- **[Examples](examples/)** - Configuration examples and use cases
+
 ## Features
 
 - **TCP Listener**: Accepts TCP connections and streams ASCII messages
@@ -23,9 +30,24 @@ A wasmCloud capability provider that listens for TCP and UDP ASCII message strea
 
 ## Prerequisites
 
-- Rust 1.70+ with `wasm32-wasi` target
+- Rust 1.70+ with `wasm32-wasip1` target
 - wasmCloud CLI (`wash`) - for building and running
 - Docker (optional, for containerized testing)
+
+## Quick Demo
+
+Run the demonstration script to see everything in action:
+
+```bash
+./demo.sh
+```
+
+This will:
+1. Build the provider and test server (if needed)
+2. Start the provider
+3. Send TCP and UDP test messages
+4. Display all received messages
+5. Clean up
 
 ## Building
 
