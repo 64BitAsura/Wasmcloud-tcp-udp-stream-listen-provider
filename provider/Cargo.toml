@@ -20,3 +20,7 @@ chrono = { version = "0.4", default-features = false, features = ["clock"] }
 
 [dev-dependencies]
 tokio-test = "0.4"
+
+[[bin]]
+name = "tcp-udp-stream-provider"
+path = "src/main.rs"

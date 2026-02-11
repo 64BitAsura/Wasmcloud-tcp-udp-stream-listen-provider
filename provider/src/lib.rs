@@ -4,9 +4,7 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use tracing::{error, info, warn};
-use wasmcloud_provider_sdk::{
-    core::HostData, load_host_data, run_provider, LinkConfig, LinkDeleteInfo, Provider,
-};
+use wasmcloud_provider_sdk::{core::HostData, LinkConfig, LinkDeleteInfo, Provider};
 
 mod connection;
 mod handler;
@@ -176,34 +174,6 @@ impl Provider for TcpUdpStreamProvider {
         info!("Provider shutdown complete");
         Ok(())
     }
-}
-
-/// Main entry point for the provider
-#[allow(dead_code)]
-#[tokio::main]
-async fn main() -> Result<()> {
-    // Initialize tracing
-    tracing_subscriber::fmt()
-        .with_env_filter(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info")),
-        )
-        .init();
-
-    info!("TCP/UDP Stream Provider starting");
-
-    // Load host data
-    let host_data = load_host_data()?;
-
-    // Create provider instance
-    let provider = TcpUdpStreamProvider::new(host_data.clone()).await?;
-
-    // Run the provider
-    let _result = run_provider(provider, "tcp-udp-stream-provider").await?;
-
-    eprintln!("Provider stopped");
-
-    Ok(())
 }
 
 #[cfg(test)]
