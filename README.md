@@ -143,9 +143,9 @@ Contributions are welcome! Please ensure:
 - [x] NATS message forwarding
 - [x] Unit tests
 - [x] Linting and formatting
-- [ ] Integration tests with mock servers
+- [x] Integration tests with mock servers
 - [ ] Deployment tests
-- [ ] CI/CD pipeline
+- [ ] CI/CD pipeline (in progress)
 - [ ] Provider archive (PAR) packaging
 - [ ] Connection health monitoring
 - [ ] Metrics and observability
