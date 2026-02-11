@@ -99,7 +99,10 @@ impl ConnectionManager {
 
         self.connections.insert(
             id.clone(),
-            ActiveConnection { id: id.clone(), task },
+            ActiveConnection {
+                id: id.clone(),
+                task,
+            },
         );
 
         info!("Connection {} started", id);

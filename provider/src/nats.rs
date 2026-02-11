@@ -100,9 +100,7 @@ impl NatsPublisher {
 
 /// Sanitize source string to be a valid NATS topic segment
 fn sanitize_topic(source: &str) -> String {
-    source
-        .replace("://", "_")
-        .replace([':', '/', '.'], "_")
+    source.replace("://", "_").replace([':', '/', '.'], "_")
 }
 
 #[cfg(test)]
