@@ -21,7 +21,22 @@ pub enum StreamProtocol {
     Udp,
 }
 
-/// Configuration for connecting to a remote TCP/UDP server.
+/// Configuration for the TCP/UDP stream provider
+#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq)]
+pub struct ProviderConfig {
+    values: HashMap<String, String>,
+}
+
+impl From<&HashMap<String, String>> for ProviderConfig {
+    /// Construct configuration struct from the passed config values.
+    fn from(values: &HashMap<String, String>) -> ProviderConfig {
+        ProviderConfig {
+            values: values.clone(),
+        }
+    }
+}
+
+/// Link-specific configuration for TCP/UDP stream connections.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct ConnectionConfig {
     /// Stream protocol (tcp or udp)

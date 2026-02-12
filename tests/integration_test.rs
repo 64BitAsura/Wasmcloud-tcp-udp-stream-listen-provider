@@ -3,11 +3,6 @@ use std::collections::HashMap;
 // NOTE: These integration tests validate provider creation, config, and shutdown.
 // Tests that require actual TCP/UDP servers or the wasmCloud runtime are marked #[ignore].
 
-/// Helper – re-export the types we need from the provider crate.
-/// Because the provider is a binary crate, we test the library modules
-/// through their public test surface (unit tests in src/) and use these
-/// integration tests for high-level validation only.
-
 #[tokio::test]
 async fn test_provider_default_state() {
     // Verify that the provider binary can be located (built)
@@ -33,6 +28,19 @@ async fn test_connection_config_from_map() {
     assert_eq!(map.get("protocol").unwrap(), "tcp");
     assert_eq!(map.get("host").unwrap(), "10.0.0.1");
     assert_eq!(map.get("port").unwrap(), "8080");
+}
+
+#[tokio::test]
+async fn test_udp_config_from_map() {
+    let mut map = HashMap::new();
+    map.insert("protocol".to_string(), "udp".to_string());
+    map.insert("host".to_string(), "192.168.1.100".to_string());
+    map.insert("port".to_string(), "5555".to_string());
+    map.insert("subscriptions".to_string(), "topic.a,topic.b".to_string());
+
+    assert_eq!(map.get("protocol").unwrap(), "udp");
+    assert_eq!(map.get("host").unwrap(), "192.168.1.100");
+    assert_eq!(map.get("port").unwrap(), "5555");
 }
 
 #[tokio::test]

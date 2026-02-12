@@ -1,14 +1,43 @@
-# Wasmcloud TCP/UDP Stream Listen Provider
+# TCP/UDP Stream Listen Capability Provider
 
-A wasmCloud capability provider that implements the `wasmcloud:messaging` contract by acting as a **unidirectional TCP/UDP ASCII message stream client**. It connects to a remote TCP or UDP server, reads incoming ASCII messages (line-delimited for TCP, datagram-per-message for UDP), and forwards them to wasmCloud components via the NATS mesh.
+A wasmCloud capability provider that implements the `wasmcloud:messaging` contract by acting as a **unidirectional TCP/UDP ASCII message stream client**. It connects to a remote TCP or UDP server, reads incoming ASCII messages (line-delimited for TCP, datagram-per-message for UDP), and forwards them to wasmCloud components via wRPC.
 
-## Features
+## Building
 
-- **TCP Stream Client**: Connect to a remote TCP server and read newline-delimited ASCII messages
-- **UDP Datagram Client**: Bind a local UDP socket, connect to a remote server, and receive ASCII datagrams
-- **wasmCloud Integration**: Implements `wasmcloud:messaging/handler` to forward messages to linked components
-- **Session Management**: Per-component stream connections with automatic cleanup on unlink
-- **Configurable**: Protocol, host, port, and subscriptions configurable via link config
+Prerequisites: [Rust toolchain](https://www.rust-lang.org/tools/install), [wash CLI](https://wasmcloud.com/docs/installation)
+
+```bash
+# Build the provider (.par.gz archive)
+wash build
+
+# Build the test component
+wash build -p ./component
+```
+
+## Testing
+
+Run the automated integration test:
+
+```bash
+./tests/run_integration_test.sh
+```
+
+Or deploy as a WADM application:
+
+```bash
+wash up -d
+wash app deploy ./wadm.yaml
+```
+
+See [TESTING.md](./TESTING.md) for detailed manual testing steps.
+
+## Development
+
+For contributing to this project, see [Agents.md](./Agents.md) for the structured implementation process including:
+- Analysis of implementation prompts
+- Three-solution approach with confidence ratings
+- Comprehensive testing checklist (format, clippy, type checks)
+- Documentation templates for future reference
 
 ## Configuration
 
@@ -19,75 +48,45 @@ A wasmCloud capability provider that implements the `wasmcloud:messaging` contra
 | `port`          | Remote server port                                             | `9000`        |
 | `subscriptions` | Comma-separated list of subscription topics (for future use)   | (empty)       |
 
-## Quick Start
-
-### Prerequisites
-
-- Rust 1.70+
-- [wash CLI](https://wasmcloud.com/docs/installation)
-
-### Build
-
-```bash
-cargo build --release
-```
-
-### Test
-
-```bash
-cargo test
-```
-
-### Deploy with wasmCloud
-
-```bash
-wash app deploy local.wadm.yaml
-```
-
-See [QUICKSTART.md](QUICKSTART.md) for a full walkthrough.
-
 ## Architecture
 
 ```
 Remote TCP/UDP Server
-        │
-        ▼ (ASCII messages)
-┌─────────────────────────┐
-│  TCP/UDP Stream Provider│
-│  (this crate)           │
-│                         │
-│  Reads lines/datagrams  │
-│  Wraps as BrokerMessage │
-└────────┬────────────────┘
-         │ wasmcloud:messaging/handler.handle-message
-         ▼
-┌─────────────────────────┐
-│  wasmCloud Component    │
-│  (linked via NATS mesh) │
-└─────────────────────────┘
+    │ ASCII messages (line-delimited / datagram)
+    ▼
+TCP/UDP Stream Provider (Rust + tokio)
+    │ wRPC calls via wasmcloud:messaging/handler (over NATS)
+    ▼
+wasmCloud Component (WebAssembly)
+    exports wasmcloud:messaging/handler
 ```
 
 ## Project Structure
 
 ```
-├── .cargo/audit.toml        # Cargo audit configuration
-├── .github/workflows/
-│   └── ci.yml               # CI/CD pipeline
-├── examples/
-│   └── basic_usage.rs       # Example usage
+├── .github/workflows/ci.yml     # CI/CD pipeline
 ├── src/
-│   ├── connection.rs        # Connection configuration
-│   ├── main.rs              # Binary entry point
-│   └── stream.rs            # Core provider logic (TCP/UDP)
+│   ├── main.rs                   # Binary entry point
+│   ├── config.rs                 # Configuration structs
+│   ├── provider.rs               # Provider trait impl + wRPC dispatch
+│   └── stream.rs                 # TCP/UDP stream client logic
+├── component/
+│   ├── src/lib.rs                # Test component implementation
+│   ├── wit/                      # Component WIT definitions
+│   ├── Cargo.toml
+│   └── wasmcloud.toml
+├── wit/
+│   ├── world.wit                 # Provider WIT world definition
+│   └── deps/                     # WIT dependencies
 ├── tests/
-│   └── integration_test.rs  # Integration tests
-├── wit/                     # WIT interface definitions
-│   ├── provider.wit
-│   └── deps/
-├── Agents.md                # Living documentation
+│   ├── integration_test.rs       # Integration tests
+│   ├── tcp_udp_server.py         # Python test server
+│   └── run_integration_test.sh   # Automated test script
+├── Agents.md                     # Living documentation
 ├── Cargo.toml
-├── local.wadm.yaml          # Local deployment manifest
-├── wasmcloud.toml            # wasmCloud provider metadata
+├── wadm.yaml                     # WADM deployment manifest
+├── wasmcloud.toml                # wasmCloud provider metadata
+├── TESTING.md                    # Testing guide
 └── README.md
 ```
 

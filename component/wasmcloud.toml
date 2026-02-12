@@ -1,0 +1,4 @@
+name = "TCP/UDP Stream Test Component"
+language = "rust"
+type = "component"
+version = "0.1.0"

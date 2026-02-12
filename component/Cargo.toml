@@ -1,0 +1,16 @@
+[package]
+name = "tcp-udp-stream-test-component"
+version = "0.1.0"
+edition = "2021"
+description = "Test component for the TCP/UDP stream listen provider"
+
+[dependencies]
+wit-bindgen = { version = "0.36", default-features = false, features = ["macros"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true

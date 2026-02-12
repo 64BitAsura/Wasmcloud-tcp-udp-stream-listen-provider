@@ -1,0 +1,2 @@
+messaging = "../../wit/deps/wasmcloud-messaging-0.2.0"
+logging = "deps/logging"

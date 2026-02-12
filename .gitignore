@@ -15,9 +15,10 @@ target/
 
 # Wash build artifacts
 build/
+component/build/
 
-# Wash scaffolding temp directory
-test-provider/
+# wasmCloud lock file
+wasmcloud.lock
 
 # RustRover / JetBrains
 .idea/
