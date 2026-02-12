@@ -6,13 +6,33 @@
 ./tests/run_integration_test.sh
 ```
 
+This script performs:
+1. Format and lint checks (`cargo fmt`, `cargo clippy`)
+2. Provider build (`wash build`)
+3. Component build (`wash build -p ./component`)
+4. Unit tests (`cargo test`)
+5. Starts a TCP test server (Python)
+6. Starts a wasmCloud host with logs captured to file
+7. Deploys the provider and component to the host
+8. Creates a config and link between the component and provider
+9. Monitors wasmCloud logs for 30 seconds
+10. **Checks logs for provider-level messages** (`TCP stream connected`, `Message successfully sent to component`)
+11. **Checks logs for component-level messages** (`Received message`)
+12. Reports PASS/FAIL based on log analysis
+
 ## Manual Test Steps
 
 ### Prerequisites
 
 ```bash
+# wash CLI
+wash --version
+
 # Python 3 is required for the test TCP/UDP server
 python3 --version
+
+# Rust toolchain with wasm targets
+rustup target add wasm32-unknown-unknown
 ```
 
 ### Step 1: Start the Test TCP Server
@@ -26,7 +46,7 @@ Server listens on `127.0.0.1:9000`, sends JSON messages every 3 seconds.
 For UDP testing:
 
 ```bash
-python3 tests/tcp_udp_server.py --protocol udp --port 9000
+python3 tests/tcp_udp_server.py --protocol udp --port 9001
 ```
 
 ### Step 2: Build Provider and Component
@@ -49,13 +69,7 @@ Wait until `wash get hosts` shows a host ID.
 ### Step 4: Deploy Provider and Component
 
 ```bash
-wash app deploy ./wadm.yaml
-```
-
-Or manually:
-
-```bash
-wash start provider file://./build/wasmcloud-provider-messaging-tcp-udp-stream.par.gz tcp-udp-stream-provider
+wash start provider file://./build/tcp-udp-stream-provider.par.gz tcp-udp-stream-provider
 wash start component file://./component/build/tcp_udp_stream_test_component.wasm test-component
 ```
 
@@ -81,37 +95,26 @@ wash link put test-component tcp-udp-stream-provider \
   --target-config stream-config
 ```
 
-### Step 6: Verify
+### Step 6: Verify via Logs
 
 Check the wasmCloud host output for:
 
-- `TCP stream connected` or `UDP socket connected`
-- `received TCP line: ...` or `received UDP datagram: ...`
-- `Message successfully sent to component ...`
-- `Received message - Subject: stream.127.0.0.1:9000, Size: ... bytes`
+- `TCP stream connected` or `UDP socket connected` — provider connected to server
+- `received TCP line` or `received UDP datagram` — provider reading data
+- `Message successfully sent to component` — provider forwarded message via wRPC
+- `Received message - Subject: stream.127.0.0.1:9000, Size: ... bytes` — component processed the message
 
 The test server terminal should show client connections.
-
-## Using WADM
-
-You can also deploy the full application declaratively:
-
-```bash
-wash up -d
-wash app deploy ./wadm.yaml
-```
 
 ## Testing Edge Cases
 
 ### Protocol Switching
 
-Test both TCP and UDP by changing the `protocol` config value:
+Test both TCP and UDP by starting servers on different ports:
 
 ```bash
-wash config put stream-config-udp \
-  protocol=udp \
-  host=127.0.0.1 \
-  port=9000
+python3 tests/tcp_udp_server.py --protocol tcp --port 9000
+python3 tests/tcp_udp_server.py --protocol udp --port 9001
 ```
 
 ### Connection Loss

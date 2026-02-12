@@ -28,6 +28,8 @@ struct ConnectionState {
     _config: ConnectionConfig,
     /// Handle to the background stream task
     _task_handle: tokio::task::JoinHandle<()>,
+    /// Shutdown signal sender — dropping this triggers stream shutdown
+    _shutdown_tx: tokio::sync::oneshot::Sender<()>,
 }
 
 /// TCP/UDP stream listen provider implementation
@@ -115,7 +117,7 @@ impl Provider for TcpUdpStreamProvider {
         // Clone what we need for the task
         let config_clone = link_config.clone();
         let source_id_clone = source_id.to_string();
-        let (_shutdown_tx, shutdown_rx) = tokio::sync::oneshot::channel::<()>();
+        let (shutdown_tx, shutdown_rx) = tokio::sync::oneshot::channel::<()>();
 
         // Spawn stream client task
         let task_handle = tokio::spawn(async move {
@@ -155,6 +157,7 @@ impl Provider for TcpUdpStreamProvider {
             ConnectionState {
                 _config: link_config,
                 _task_handle: task_handle,
+                _shutdown_tx: shutdown_tx,
             },
         );
 
