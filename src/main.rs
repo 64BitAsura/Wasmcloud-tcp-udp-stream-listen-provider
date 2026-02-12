@@ -1,7 +1,7 @@
 //! TCP/UDP stream listen provider for wasmcloud:messaging.
 //!
 //! This provider acts as a unidirectional TCP/UDP ASCII message stream client:
-//! it connects to (or listens on) a remote TCP/UDP server and forwards received
+//! it connects to a remote TCP/UDP server and forwards received
 //! ASCII messages to wasmCloud components via the NATS mesh using the
 //! `wasmcloud:messaging/handler.handle-message` callback.
 //!
