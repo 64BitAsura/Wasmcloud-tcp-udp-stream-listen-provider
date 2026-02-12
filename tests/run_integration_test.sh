@@ -41,14 +41,14 @@ cleanup() {
     echo -e "${YELLOW}Cleaning up...${NC}"
 
     # Stop TCP test server
-    if [ ! -z "$TCP_SERVER_PID" ]; then
+    if [ -n "$TCP_SERVER_PID" ]; then
         kill $TCP_SERVER_PID 2>/dev/null || true
         echo "✓ Stopped TCP test server"
     fi
 
     # Stop wasmCloud
     wash down 2>/dev/null || true
-    if [ ! -z "$WASH_PID" ]; then
+    if [ -n "$WASH_PID" ]; then
         kill $WASH_PID 2>/dev/null || true
     fi
     echo "✓ Stopped wasmCloud"
@@ -73,7 +73,7 @@ echo ""
 
 # Step 3: Build provider
 echo -e "${YELLOW}Step 3: Building provider...${NC}"
-wash build 2>&1 | grep -E "(Compiling|Finished|error|Built)" || true
+wash build
 
 # Find the built provider archive
 PROVIDER_PATH=$(find build -name "*.par.gz" 2>/dev/null | head -1)
@@ -87,7 +87,7 @@ echo ""
 
 # Step 4: Build component
 echo -e "${YELLOW}Step 4: Building test component...${NC}"
-wash build -p ./component 2>&1 | grep -E "(Compiling|Finished|error|Built)" || true
+wash build -p ./component
 
 COMPONENT_PATH=$(find component/build -name "*.wasm" 2>/dev/null | head -1)
 if [ -z "$COMPONENT_PATH" ]; then
@@ -142,6 +142,7 @@ echo ""
 
 # Step 8: Deploy provider
 echo -e "${YELLOW}Step 8: Deploying provider...${NC}"
+# wash start may return timeout error even when provider starts successfully, so we verify via inventory
 wash start provider "file://./$PROVIDER_PATH" tcp-udp-stream-provider --timeout-ms 30000 2>&1 || true
 sleep 5
 
@@ -156,6 +157,7 @@ echo ""
 
 # Step 9: Deploy component
 echo -e "${YELLOW}Step 9: Deploying component...${NC}"
+# wash start may return timeout error even when component starts successfully, so we verify via inventory
 wash start component "file://./$COMPONENT_PATH" test-component --timeout-ms 30000 2>&1 || true
 sleep 3
 
