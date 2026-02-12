@@ -11,7 +11,7 @@ cargo test
 # Run ignored tests that require network access (start test servers first)
 cargo test -- --ignored
 
-# Run the full integration test (requires wash v2 CLI)
+# Run the full integration test (requires wash CLI, deploys to wasmCloud host)
 ./tests/run_integration_test.sh
 ```
 
@@ -21,7 +21,17 @@ cargo test -- --ignored
 |------|-------------|
 | `integration_test.rs` | High-level integration tests: build verification, config parsing, TCP/UDP stream connectivity tests (ignored by default) |
 | `tcp_udp_server.py` | Python test server for TCP/UDP message generation |
-| `run_integration_test.sh` | Automated integration test script (format, build, deploy, verify) using wash v2 CLI |
+| `run_integration_test.sh` | Automated integration test script: builds, deploys to wasmCloud host, and verifies message flow by checking host logs at provider and component level |
+
+## Integration Test Script
+
+The `run_integration_test.sh` script deploys the provider and component to a real wasmCloud host,
+then checks the host logs for evidence of message flow:
+
+- **Provider-level**: `TCP stream connected`, `Message successfully sent to component`
+- **Component-level**: `Received message - Subject: stream.127.0.0.1:9000`
+
+This follows the same approach as the [WasmCloud-websocket-client-provider](https://github.com/64BitAsura/WasmCloud-websocket-client-provider) integration tests.
 
 ## Test Server Usage
 

@@ -6,27 +6,33 @@
 ./tests/run_integration_test.sh
 ```
 
-This script uses **wash v2** CLI and performs:
+This script performs:
 1. Format and lint checks (`cargo fmt`, `cargo clippy`)
 2. Provider build (`wash build`)
-3. Component build (`wash -C ./component build`)
+3. Component build (`wash build -p ./component`)
 4. Unit tests (`cargo test`)
-5. TCP stream connectivity test (against Python test server)
-6. UDP stream connectivity test (against Python test server)
+5. Starts a TCP test server (Python)
+6. Starts a wasmCloud host with logs captured to file
+7. Deploys the provider and component to the host
+8. Creates a config and link between the component and provider
+9. Monitors wasmCloud logs for 30 seconds
+10. **Checks logs for provider-level messages** (`TCP stream connected`, `Message successfully sent to component`)
+11. **Checks logs for component-level messages** (`Received message`)
+12. Reports PASS/FAIL based on log analysis
 
 ## Manual Test Steps
 
 ### Prerequisites
 
 ```bash
-# wash v2 CLI
+# wash CLI
 wash --version
 
 # Python 3 is required for the test TCP/UDP server
 python3 --version
 
-# Rust toolchain with wasm32-wasip2 target (for component builds)
-rustup target add wasm32-wasip2
+# Rust toolchain with wasm targets
+rustup target add wasm32-unknown-unknown
 ```
 
 ### Step 1: Start the Test TCP Server
@@ -47,30 +53,58 @@ python3 tests/tcp_udp_server.py --protocol udp --port 9001
 
 ```bash
 wash build
-wash -C ./component build
+wash build -p ./component
 ```
 
-The provider binary will be in `target/release/`, the component wasm in `component/target/wasm32-wasip2/release/`.
+The provider archive will be in `build/` (`.par.gz`), the component in `component/build/` (`.wasm`).
 
-### Step 3: Run Integration Tests
-
-With the test server running:
+### Step 3: Start wasmCloud Host
 
 ```bash
-# TCP integration test
-TEST_TCP_PORT=9000 cargo test test_tcp_stream_connect -- --ignored
-
-# UDP integration test
-TEST_UDP_PORT=9001 cargo test test_udp_stream_connect -- --ignored
+wash up
 ```
 
-### Step 4: Run with wash dev (Component Development)
+Wait until `wash get hosts` shows a host ID.
 
-For developing the test component with wash v2:
+### Step 4: Deploy Provider and Component
 
 ```bash
-wash -C ./component dev
+wash start provider file://./build/tcp-udp-stream-provider.par.gz tcp-udp-stream-provider
+wash start component file://./component/build/tcp_udp_stream_test_component.wasm test-component
 ```
+
+Verify both are running:
+
+```bash
+wash get inventory
+```
+
+### Step 5: Create Config and Link
+
+```bash
+# Create named config
+wash config put stream-config \
+  protocol=tcp \
+  host=127.0.0.1 \
+  port=9000
+
+# Link component to provider
+wash link put test-component tcp-udp-stream-provider \
+  wasmcloud messaging \
+  --interface handler \
+  --target-config stream-config
+```
+
+### Step 6: Verify via Logs
+
+Check the wasmCloud host output for:
+
+- `TCP stream connected` or `UDP socket connected` — provider connected to server
+- `received TCP line` or `received UDP datagram` — provider reading data
+- `Message successfully sent to component` — provider forwarded message via wRPC
+- `Received message - Subject: stream.127.0.0.1:9000, Size: ... bytes` — component processed the message
+
+The test server terminal should show client connections.
 
 ## Testing Edge Cases
 
@@ -89,13 +123,19 @@ python3 tests/tcp_udp_server.py --protocol udp --port 9001
 2. Observe the stream task exits in provider logs
 3. Restart the server — a new link is needed to reconnect (auto-reconnection is a future feature)
 
+## Cleanup
+
+```bash
+wash down
+```
+
 ## Troubleshooting
 
 | Problem | Check |
 |---------|-------|
 | Provider not connecting | Is the TCP/UDP server running? Check `host` and `port` in config |
-| `wash build` fails with "build.command is required" | Ensure `.wash/config.yaml` exists with build configuration |
-| Component build fails with missing target | Run `rustup target add wasm32-wasip2` |
+| Component not receiving messages | Run `wash link query` and `wash get inventory` |
+| NATS connection issues | Run `wash get hosts`, try `wash down && wash up` |
 
 ## Architecture
 
