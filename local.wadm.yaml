@@ -1,0 +1,44 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: tcp-udp-stream-provider-app
+  annotations:
+    version: v0.0.1
+    description: 'An application with the TCP/UDP stream listen provider and an echo-messaging component'
+spec:
+  components:
+    - name: echo-component
+      type: component
+      properties:
+        image: ghcr.io/wasmcloud/components/echo-messaging-rust:0.2.0
+      traits:
+        - type: spreadscaler
+          properties:
+            instances: 1
+        - type: link
+          properties:
+            target:
+              name: tcp-udp-stream-provider
+            namespace: wasmcloud
+            package: messaging
+            interfaces: [consumer]
+
+    - name: tcp-udp-stream-provider
+      type: capability
+      properties:
+        image: file://./build/wasmcloud-provider-messaging-tcp-udp-stream.par.gz
+        id: tcp-udp-stream-provider
+        config:
+          - name: provider-config
+            properties:
+              protocol: tcp
+              host: "127.0.0.1"
+              port: "9000"
+      traits:
+        - type: link
+          properties:
+            target:
+              name: echo-component
+            namespace: wasmcloud
+            package: messaging
+            interfaces: [handler]

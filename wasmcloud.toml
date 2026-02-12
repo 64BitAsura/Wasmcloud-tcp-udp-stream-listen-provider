@@ -1,0 +1,6 @@
+name = "TCP/UDP Stream Listen Provider"
+language = "rust"
+type = "provider"
+
+[provider]
+vendor = "64BitAsura"

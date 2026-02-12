@@ -1,0 +1,10 @@
+# Configuration for cargo-audit
+#
+# This file documents known security advisories in transitive dependencies
+# that are not directly used by this provider and are waiting for upstream fixes.
+#
+# See SECURITY.md for detailed risk assessment and mitigation strategies.
+
+[advisories]
+# Treat informational warnings as non-fatal
+informational_warnings = ["unmaintained"]
