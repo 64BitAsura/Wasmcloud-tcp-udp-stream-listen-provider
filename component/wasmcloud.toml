@@ -2,3 +2,9 @@ name = "TCP/UDP Stream Test Component"
 language = "rust"
 type = "component"
 version = "0.1.0"
+
+[component]
+wasm_target = "wasm32-wasip2"
+wit_world = "component"
+build_command = "cargo build --release --target wasm32-wasip2"
+build_artifact = "target/wasm32-wasip2/release/tcp_udp_stream_test_component.wasm"

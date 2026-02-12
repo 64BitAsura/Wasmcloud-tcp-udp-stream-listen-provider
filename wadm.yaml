@@ -10,7 +10,7 @@ spec:
     - name: test-component
       type: component
       properties:
-        image: file://./component/build/tcp_udp_stream_test_component.wasm
+        image: file://./component/target/wasm32-wasip2/release/tcp_udp_stream_test_component_s.wasm
       traits:
         - type: spreadscaler
           properties:
@@ -19,7 +19,7 @@ spec:
     - name: tcp-udp-stream-provider
       type: capability
       properties:
-        image: file://./build/wasmcloud-provider-messaging-tcp-udp-stream.par.gz
+        image: file://./build/tcp-udp-stream-provider.par.gz
         id: tcp-udp-stream-provider
       traits:
         - type: link

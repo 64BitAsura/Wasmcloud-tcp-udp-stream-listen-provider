@@ -15,10 +15,10 @@ target/
 
 # Wash build artifacts
 build/
+target/
 component/build/
 
-# wasmCloud lock file
-wasmcloud.lock
+
 
 # RustRover / JetBrains
 .idea/

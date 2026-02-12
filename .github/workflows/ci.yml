@@ -12,7 +12,7 @@ env:
 jobs:
   check-and-lint:
     name: Check & Lint
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
     - uses: actions/checkout@v4
 
@@ -45,7 +45,7 @@ jobs:
 
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [check-and-lint]
     steps:
     - uses: actions/checkout@v4
@@ -78,7 +78,7 @@ jobs:
 
   integration-test:
     name: Run Integration Tests
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [build]
     if: github.event_name == 'push' && github.ref_name == 'main'
     steps:
