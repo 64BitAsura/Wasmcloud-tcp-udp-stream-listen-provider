@@ -20,7 +20,7 @@ jobs:
       uses: dtolnay/rust-toolchain@stable
       with:
         components: rustfmt, clippy
-        targets: wasm32-wasip2
+        targets: wasm32-wasip2, wasm32-unknown-unknown
 
     - name: Install wash CLI
       run: curl -s "https://packagecloud.io/install/repositories/wasmcloud/core/script.deb.sh" | sudo bash && sudo apt install wash
@@ -53,7 +53,7 @@ jobs:
     - name: Install Rust
       uses: dtolnay/rust-toolchain@stable
       with:
-        targets: wasm32-wasip2
+        targets: wasm32-wasip2, wasm32-unknown-unknown
 
     - name: Install wash CLI
       run: curl -s "https://packagecloud.io/install/repositories/wasmcloud/core/script.deb.sh" | sudo bash && sudo apt install wash
@@ -87,7 +87,7 @@ jobs:
     - name: Install Rust
       uses: dtolnay/rust-toolchain@stable
       with:
-        targets: wasm32-wasip2
+        targets: wasm32-wasip2, wasm32-unknown-unknown
 
     - name: Install wash CLI
       run: curl -s "https://packagecloud.io/install/repositories/wasmcloud/core/script.deb.sh" | sudo bash && sudo apt install wash
