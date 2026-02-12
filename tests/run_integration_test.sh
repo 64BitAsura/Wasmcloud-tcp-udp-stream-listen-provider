@@ -99,11 +99,6 @@ TEST_TCP_PORT="$TCP_PORT" cargo test test_tcp_stream_connect -- --ignored
 echo -e "${GREEN}TCP integration test passed${NC}"
 echo ""
 
-# Stop TCP server
-kill $TCP_PID 2>/dev/null || true
-wait $TCP_PID 2>/dev/null || true
-echo ""
-
 # Step 8: Start UDP test server in background
 UDP_PORT=9001
 echo -e "${YELLOW}Step 8: Starting UDP test server on port ${UDP_PORT}...${NC}"

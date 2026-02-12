@@ -107,7 +107,7 @@ async fn test_udp_stream_connect() {
         .expect("failed to send UDP datagram");
 
     // Wait for a response datagram from the server
-    let mut buf = vec![0u8; 65535];
+    let mut buf = vec![0u8; 4096];
     let n = tokio::time::timeout(std::time::Duration::from_secs(10), socket.recv(&mut buf))
         .await
         .expect("timed out waiting for UDP message")
