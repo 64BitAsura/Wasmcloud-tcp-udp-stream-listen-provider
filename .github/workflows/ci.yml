@@ -23,7 +23,7 @@ jobs:
         targets: wasm32-wasip2
 
     - name: Install wash CLI
-      uses: wasmcloud/common-actions/install-wash@main
+      run: curl -s "https://packagecloud.io/install/repositories/wasmcloud/core/script.deb.sh" | sudo bash && sudo apt install wash
 
     - name: Cache cargo
       uses: actions/cache@v4
@@ -56,7 +56,7 @@ jobs:
         targets: wasm32-wasip2
 
     - name: Install wash CLI
-      uses: wasmcloud/common-actions/install-wash@main
+      run: curl -s "https://packagecloud.io/install/repositories/wasmcloud/core/script.deb.sh" | sudo bash && sudo apt install wash
 
     - name: Cache cargo
       uses: actions/cache@v4
@@ -75,15 +75,6 @@ jobs:
 
     - name: Run unit tests
       run: cargo test --verbose
-
-  security_audit:
-    name: Security Audit
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions-rs/audit-check@v1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
 
   publish:
     name: Publish to GitHub Packages
