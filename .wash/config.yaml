@@ -1,0 +1,3 @@
+build:
+  command: cargo build --release
+  component_path: target/release/tcp-udp-stream-provider

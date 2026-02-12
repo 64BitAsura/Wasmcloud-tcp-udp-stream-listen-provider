@@ -8,10 +8,10 @@ This directory contains integration tests and test utilities for the TCP/UDP Str
 # Run all non-ignored tests (unit + integration)
 cargo test
 
-# Run ignored tests that require network access
+# Run ignored tests that require network access (start test servers first)
 cargo test -- --ignored
 
-# Run the full integration test (requires wash CLI, wasmCloud host)
+# Run the full integration test (requires wash v2 CLI)
 ./tests/run_integration_test.sh
 ```
 
@@ -19,9 +19,9 @@ cargo test -- --ignored
 
 | File | Description |
 |------|-------------|
-| `integration_test.rs` | High-level integration tests: build verification, config parsing, TCP/UDP stream tests (ignored by default) |
+| `integration_test.rs` | High-level integration tests: build verification, config parsing, TCP/UDP stream connectivity tests (ignored by default) |
 | `tcp_udp_server.py` | Python test server for TCP/UDP message generation |
-| `run_integration_test.sh` | Automated integration test script (format, build, deploy, verify) |
+| `run_integration_test.sh` | Automated integration test script (format, build, deploy, verify) using wash v2 CLI |
 
 ## Test Server Usage
 
@@ -30,7 +30,18 @@ cargo test -- --ignored
 python3 tests/tcp_udp_server.py --protocol tcp --port 9000
 
 # Start UDP test server
-python3 tests/tcp_udp_server.py --protocol udp --port 9000
+python3 tests/tcp_udp_server.py --protocol udp --port 9001
+```
+
+## Integration Tests (Ignored by Default)
+
+The `test_tcp_stream_connect` and `test_udp_stream_connect` tests require running test servers.
+Use environment variables to configure ports:
+
+```bash
+# Run with test servers on custom ports
+TEST_TCP_PORT=9000 cargo test test_tcp_stream_connect -- --ignored
+TEST_UDP_PORT=9001 cargo test test_udp_stream_connect -- --ignored
 ```
 
 ## Unit Tests

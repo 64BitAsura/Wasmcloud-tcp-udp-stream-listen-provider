@@ -2820,6 +2820,7 @@ dependencies = [
  "anyhow",
  "bytes",
  "serde",
+ "serde_json",
  "tokio",
  "tokio-test",
  "tracing",
