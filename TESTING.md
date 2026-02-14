@@ -38,15 +38,15 @@ rustup target add wasm32-unknown-unknown
 ### Step 1: Start the Test TCP Server
 
 ```bash
-python3 tests/tcp_udp_server.py --protocol tcp --port 9000
+python3 tests/tcp_udp_server.py --protocol tcp --port 10110
 ```
 
-Server listens on `127.0.0.1:9000`, sends JSON messages every 3 seconds.
+Server listens on `127.0.0.1:10110`, sends JSON messages every 3 seconds.
 
 For UDP testing:
 
 ```bash
-python3 tests/tcp_udp_server.py --protocol udp --port 9001
+python3 tests/tcp_udp_server.py --protocol udp --port 10111
 ```
 
 ### Step 2: Build Provider and Component
@@ -58,51 +58,23 @@ wash build -p ./component
 
 The provider archive will be in `build/` (`.par.gz`), the component in `component/build/` (`.wasm`).
 
-### Step 3: Start wasmCloud Host
+### Step 3: Start wasmCloud Host and Deploy
 
 ```bash
-wash up
+wash up -d
+wash app deploy ./wadm.yaml
 ```
 
-Wait until `wash get hosts` shows a host ID.
+Wait until `wash app list` shows the application as deployed.
 
-### Step 4: Deploy Provider and Component
-
-```bash
-wash start provider file://./build/tcp-udp-stream-provider.par.gz tcp-udp-stream-provider
-wash start component file://./component/build/tcp_udp_stream_test_component.wasm test-component
-```
-
-Verify both are running:
-
-```bash
-wash get inventory
-```
-
-### Step 5: Create Config and Link
-
-```bash
-# Create named config
-wash config put stream-config \
-  protocol=tcp \
-  host=127.0.0.1 \
-  port=9000
-
-# Link component to provider
-wash link put test-component tcp-udp-stream-provider \
-  wasmcloud messaging \
-  --interface handler \
-  --target-config stream-config
-```
-
-### Step 6: Verify via Logs
+### Step 4: Verify via Logs
 
 Check the wasmCloud host output for:
 
 - `TCP stream connected` or `UDP socket connected` — provider connected to server
 - `received TCP line` or `received UDP datagram` — provider reading data
 - `Message successfully sent to component` — provider forwarded message via wRPC
-- `Received message - Subject: stream.127.0.0.1:9000, Size: ... bytes` — component processed the message
+- `Received message - Subject: stream.127.0.0.1:10110, Size: ... bytes` — component processed the message
 
 The test server terminal should show client connections.
 
@@ -113,8 +85,8 @@ The test server terminal should show client connections.
 Test both TCP and UDP by starting servers on different ports:
 
 ```bash
-python3 tests/tcp_udp_server.py --protocol tcp --port 9000
-python3 tests/tcp_udp_server.py --protocol udp --port 9001
+python3 tests/tcp_udp_server.py --protocol tcp --port 10110
+python3 tests/tcp_udp_server.py --protocol udp --port 10111
 ```
 
 ### Connection Loss
@@ -140,7 +112,7 @@ wash down
 ## Architecture
 
 ```
-TCP/UDP Server (127.0.0.1:9000)
+TCP/UDP Server (127.0.0.1:10110)
     │ ASCII messages
     ▼
 TCP/UDP Stream Provider (Rust + tokio)

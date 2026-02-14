@@ -29,7 +29,7 @@ The `run_integration_test.sh` script deploys the provider and component to a rea
 then checks the host logs for evidence of message flow:
 
 - **Provider-level**: `TCP stream connected`, `Message successfully sent to component`
-- **Component-level**: `Received message - Subject: stream.127.0.0.1:9000`
+- **Component-level**: `Received message - Subject: stream.127.0.0.1:10110`
 
 This follows the same approach as the [WasmCloud-websocket-client-provider](https://github.com/64BitAsura/WasmCloud-websocket-client-provider) integration tests.
 
@@ -37,10 +37,10 @@ This follows the same approach as the [WasmCloud-websocket-client-provider](http
 
 ```bash
 # Start TCP test server
-python3 tests/tcp_udp_server.py --protocol tcp --port 9000
+python3 tests/tcp_udp_server.py --protocol tcp --port 10110
 
 # Start UDP test server
-python3 tests/tcp_udp_server.py --protocol udp --port 9001
+python3 tests/tcp_udp_server.py --protocol udp --port 10111
 ```
 
 ## Integration Tests (Ignored by Default)
@@ -50,8 +50,8 @@ Use environment variables to configure ports:
 
 ```bash
 # Run with test servers on custom ports
-TEST_TCP_PORT=9000 cargo test test_tcp_stream_connect -- --ignored
-TEST_UDP_PORT=9001 cargo test test_udp_stream_connect -- --ignored
+TEST_TCP_PORT=10110 cargo test test_tcp_stream_connect -- --ignored
+TEST_UDP_PORT=10111 cargo test test_udp_stream_connect -- --ignored
 ```
 
 ## Unit Tests
