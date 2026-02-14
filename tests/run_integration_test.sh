@@ -89,7 +89,7 @@ echo ""
 echo -e "${YELLOW}Step 4: Building test component...${NC}"
 wash build -p ./component
 
-COMPONENT_PATH=$(find component/build -name "*_s.wasm" 2>/dev/null | head -1)
+COMPONENT_PATH=$(find component/target -name "*_s.wasm" 2>/dev/null | head -1)
 if [ -z "$COMPONENT_PATH" ]; then
     echo -e "${RED}Error: Component build failed${NC}"
     exit 1
