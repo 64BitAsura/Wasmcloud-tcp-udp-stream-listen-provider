@@ -15,23 +15,22 @@ spec:
         - type: spreadscaler
           properties:
             instances: 1
+        - type: link
+          properties:
+            target:
+              name: tcp-udp-stream-provider
+              config:
+                - name: stream-config
+                  properties:
+                    protocol: tcp
+                    host: "127.0.0.1"
+                    port: "10110"
+            namespace: wasmcloud
+            package: messaging
+            interfaces: [handler]
 
     - name: tcp-udp-stream-provider
       type: capability
       properties:
         image: file://./build/tcp-udp-stream-provider.par.gz
         id: tcp-udp-stream-provider
-      traits:
-        - type: link
-          properties:
-            target:
-              name: test-component
-              config:
-                - name: stream-config
-                  properties:
-                    protocol: tcp
-                    host: "127.0.0.1"
-                    port: "9000"
-            namespace: wasmcloud
-            package: messaging
-            interfaces: [handler]

@@ -1,0 +1,3 @@
+[submodule "NMEA_Simulator"]
+	path = NMEA_Simulator
+	url = https://github.com/Kafkar/NMEA_Simulator.git
